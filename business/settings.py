@@ -38,9 +38,7 @@ CORS_ORIGIN_ALLOW_ALL = True
 CHANNEL_LAYERS = {
     "default": {
         "CONFIG": {
-
             "hosts": [('localhost', '6379')]
-
         },
         "BACKEND": 'channels_redis.core.RedisChannelLayer'
     }
@@ -48,37 +46,37 @@ CHANNEL_LAYERS = {
 
 RQ_QUEUES = {
     'default': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'stir_fry': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'deep_fry': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'grilling': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'drinks': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'boiler': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
     }, 'steaming': {
-        'HOST': '192.168.1.7',
+        'HOST': '192.168.1.6',
         'PORT': 6379,
         'DB': 0,
         'DEFAULT_TIMEOUT': 10000,
@@ -94,9 +92,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'app',
+    'computer_vision',
     'rest_framework',
     'django_rq',
-    'channels'
+    'channels',
+    'ui'
 ]
 
 REST_FRAMEWORK = {
@@ -116,7 +116,6 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.FileUploadParser'
     ),
-
 }
 
 MIDDLEWARE = [
@@ -220,8 +219,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+MEDIA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = [os.path.join(MEDIA_DIR, 'static_files')]
+STATIC_ROOT = os.path.join(MEDIA_DIR, 'static')
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(MEDIA_DIR, 'media')

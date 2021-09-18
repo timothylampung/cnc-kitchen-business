@@ -6,11 +6,10 @@
 
 
 from django.conf.urls import url
-
 from app.api.views import IngredientDetailAPIView, IngredientAPIView, ModuleAPIView, ModuleDetailAPIView, RecipeAPIView, \
     RecipeDetailAPIView, InstructionAPIView, InstructionDetailAPIView, StockGroupAPIView, StockGroupDetailAPIView, \
     TaskAPIView, TaskDetailAPIView, IngredientItemsAPIView, IngredientItemsDetailAPIView, CoordinatesAPIView, \
-    CoordinatesDetailAPIView, SettingsAPIView, SettingsDetailAPIView
+    CoordinatesDetailAPIView, SettingsAPIView, SettingsDetailAPIView, CookStateAPIView, CookStateDetailAPIView
 from stir_fry.api.views import TaskExecutionView
 
 urlpatterns = [
@@ -41,4 +40,8 @@ urlpatterns = [
 
     url(r'^settings/$', SettingsAPIView.as_view(), name='create settings'),
     url(r'^settings/(?P<pk>\d+)/$', SettingsDetailAPIView.as_view(), name='update_or_delete_or_find_settings_by_id'),
+
+    url(r'^cook-states/$', CookStateAPIView.as_view(), name='create_cook_state'),
+    url(r'^cook-states/(?P<pk>\d+)/$', CookStateDetailAPIView.as_view(),
+        name='update_or_delete_or_find_CookState_by_id'),
 ]

@@ -62,10 +62,6 @@ class ArduinoUdp:
         while self.busy:
             pass
         self.busy = True
-        print(f'SENDING to {self.ip} ')
-        print(f'{message}')
         self.client_socket.sendto(message.encode(), self.addr)
         recv = self.recv()
-        print('GET')
-
         return recv

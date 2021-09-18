@@ -99,6 +99,7 @@ class Module(DocumentModel):
     wok_camera = models.CharField(null=True, blank=True, max_length=400)
     camera_opened = models.BooleanField(default=False, null=True)
     port = models.IntegerField(default=8888)
+    ui_port = models.IntegerField(default=8888)
     status = models.CharField(max_length=200, null=True, choices=STATUS, default=AVAILABLE)
     connectivity = models.CharField(max_length=200, null=True, choices=CONNECTIVITY, default=DISCONNECTED)
     type = models.CharField(max_length=200, null=True, choices=TYPE, default=STIR_FRY_MODULE)
@@ -133,6 +134,7 @@ class Recipe(DocumentModel):
     rating = models.DecimalField(max_digits=19, decimal_places=2)
     cv_model_path = models.CharField(null=True, blank=True, max_length=400)
     number_of_class = models.IntegerField(default=0)
+    cv_images_path = models.CharField(max_length=800, null=True)
 
     def __str__(self):
         return self.recipe_name

@@ -5,7 +5,6 @@
 #  Contacts : +601165315133
 
 from django.contrib import admin
-# Register your models here.
 from app.models import Recipe, Ingredient, Instruction, Task, IngredientItem, Module, StockGroup, Coordinates, Setting
 
 admin.site.register(Recipe)

@@ -43,6 +43,10 @@ class SFConf(object):
             'code': 57,
             'name': 'VERTICAL_FOR_PICKING'
         }
+        VERTICAL_FOR_WASHING = {
+            'code': 58,
+            'name': 'VERTICAL_FOR_WASHING'
+        }
         PORTION = {
             'code': 101,
             'name': 'PORTION'
@@ -103,4 +107,38 @@ class SFConf(object):
             'code': 900,
             'name': 'RESET'
         }
+
+        UPDATE_TIME = {
+            'code': 59,
+            'name': 'UPDATE_TIME'
+        }
+        START_PROCESS = {
+            'code': 60,
+            'name': 'START_PROCESS'
+        }
+        UPDATE_TEMPERATURE = {
+            'code': 61,
+            'name': 'UPDATE_TEMPERATURE'
+        }
+        STOP_PROCESS = {
+            'code': 62,
+            'name': 'STOP_PROCESS'
+        }
+        PAUSE_TIMER = {
+            'code': 63,
+            'name': 'PAUSE_TIMER'
+        }
+        UNPAUSE_TIMER = {
+            'code': 64,
+            'name': 'UNPAUSE_TIMER'
+        }
+        ENABLE_FLIP = {
+            'code': 65,
+            'name': 'ENABLE_FLIP'
+        }
+        DISABLE_FLIP = {
+            'code': 66,
+            'name': 'DISABLE_FLIP'
+        }
+
         ArduinoRequestTimeOut = 180

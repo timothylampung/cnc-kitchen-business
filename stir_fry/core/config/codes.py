@@ -5,6 +5,12 @@
 #  Contacts : 01165315133
 
 class ArduinoResponseCode:
+    DISABLE_FLIP = 'disable_flip'
+    ENABLE_FLIP = 'enable_flip'
+    START_PROCESS = 'start_process'
+    STOP_PROCESS = 'stop_process'
+    UPDATE_TEMPERATURE = 'update_temperature'
+    UNPAUSE_TIMER = 'unpause_timer'
     CLOSE_OIL_VALVE_SUCCESS = 'close_oil_valve'
     OPEN_OIL_VALVE_SUCCESS = 'open_oil_valve'
     CLOSE_WATER_VALVE_SUCCESS = 'close_water_valve'

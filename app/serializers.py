@@ -5,8 +5,7 @@
 #  Contacts : +601165315133
 
 from rest_framework import serializers
-from rest_framework.fields import IntegerField, CharField
-
+from rest_framework.fields import CharField
 from app.models import DocumentModel
 from business.serializers import UserSerializer
 

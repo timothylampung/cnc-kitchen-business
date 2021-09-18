@@ -15,8 +15,9 @@ from rest_framework.response import Response
 
 from app.api.serializers import IngredientSerializer, ModuleSerializer, RecipeSerializer, InstructionSerializer, \
     StockGroupSerializer, TaskSerializer, IngredientItemSerializer, CoordinateSerializer, TaskViewSerializer, \
-    SettingsSerializer
-from app.models import Ingredient, Module, Recipe, Instruction, StockGroup, Task, IngredientItem, Coordinates, Setting
+    SettingsSerializer, CookStateSerializer
+from app.models import Ingredient, Module, Recipe, Instruction, StockGroup, Task, IngredientItem, Coordinates, Setting, \
+    CookState
 
 
 class CustomPaginationClass(pagination.PageNumberPagination):
@@ -81,7 +82,6 @@ class IngredientAPIView(mixins.CreateModelMixin, generics.ListAPIView):
         return qs
 
     def post(self, request, *args, **kwargs):
-        print(request.data)
         return self.create(request, *args, **kwargs)
 
 
@@ -110,7 +110,6 @@ class StockGroupAPIView(mixins.CreateModelMixin, generics.ListAPIView):
     def get_queryset(self):
         qs = StockGroup.objects.all().order_by('timestamp')
         query = self.request.GET.get('query')
-        print(query)
         if query is not None:
             qs = qs.filter(group_name__icontains=query)
         return qs
@@ -144,7 +143,6 @@ class RecipeAPIView(mixins.CreateModelMixin, generics.ListAPIView):
     def get_queryset(self):
         qs = Recipe.objects.all().order_by('timestamp')
         query = self.request.GET.get('query')
-        print(query)
         if query is not None:
             qs = qs.filter(recipe_name__icontains=query)
         return qs
@@ -186,7 +184,7 @@ class InstructionAPIView(mixins.CreateModelMixin, generics.ListAPIView):
                 qs = qs.filter(name__icontains=query)
             return qs
         except Exception as e:
-            print(e)
+            pass
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -224,7 +222,6 @@ class TaskAPIView(mixins.CreateModelMixin, generics.ListAPIView):
         try:
             module_id = request.data['module_id']
         except KeyError:
-            print('auto assign')
             module = Module.objects.filter(status=Module.AVAILABLE)[0]
             request.data['module_id'] = module.id
         return self.create(request, *args, **kwargs)
@@ -261,7 +258,7 @@ class IngredientItemsAPIView(mixins.CreateModelMixin, generics.ListAPIView):
                 qs = qs.filter(ingredient_ingredient_name__icontains=query)
             return qs
         except Exception as e:
-            print(e)
+            pass
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -296,7 +293,7 @@ class CoordinatesAPIView(mixins.CreateModelMixin, generics.ListAPIView):
                 qs = qs.filter(name__icontains=query)
             return qs
         except Exception as e:
-            print(e)
+            pass
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -331,7 +328,7 @@ class SettingsAPIView(mixins.CreateModelMixin, generics.ListAPIView):
                 qs = qs.filter(name__icontains=query)
             return qs
         except Exception as e:
-            print(e)
+            pass
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
@@ -341,6 +338,50 @@ class SettingsAPIView(mixins.CreateModelMixin, generics.ListAPIView):
 class SettingsDetailAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.RetrieveAPIView):
     queryset = Setting.objects.all()
     serializer_class = SettingsSerializer
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+@permission_classes((AllowAny,))
+class CookStateAPIView(mixins.CreateModelMixin, generics.ListAPIView):
+    queryset = CookState.objects.all()
+    serializer_class = CookStateSerializer
+    pagination_class = CustomPaginationClass
+
+    def get_queryset(self):
+        qs = CookState.objects.all()
+        try:
+            query = self.request.GET.get('query')
+            if query is not None:
+                qs = qs.filter(state_label__icontains=query)
+        except Exception as e:
+            pass
+        try:
+            recipe_id = self.request.GET.get('recipe_id')
+            if recipe_id is not None:
+                if isinstance(recipe_id, int):
+                    recipe = Recipe.objects.get(pk=recipe_id)
+                    qs = qs.filter(recipe_id=recipe)
+        except Exception as e:
+            pass
+
+        return qs
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+@permission_classes((AllowAny,))
+class CookStateDetailAPIView(mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.RetrieveAPIView):
+    queryset = CookState.objects.all()
+    serializer_class = CookStateSerializer
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)

@@ -6,4 +6,5 @@ MODULES = {
     "STEAMING_MODULE": {},
     "TRANSPORTER_MODULE": {},
     "STIR_FRY_MODULE": {},
+    "OPEN_CAMERA": False
 }

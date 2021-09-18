@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/modules_selection.css' %}">
+{% endblock %}
+
+{% block content %}
+    <main>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row row-cols-1 row-cols-md-5">
+                    {% for module in modules %}
+                        <div class="col-lg-4">
+                            <div class="card card-margin">
+
+                                <div class="card-header no-border">
+                                    <h5 class="card-title">{{ module.name }}</h5>
+                                </div>
+
+                                <div class="card-body pt-0">
+                                    <div class="widget-49">
+                                        <div class="widget-49-title-wrapper">
+                                            <div class="widget-49-date-primary">
+                                                <span class="widget-49-date-day">09</span>
+                                                <span class="widget-49-date-month">apr</span>
+                                            </div>
+                                            <div class="widget-49-meeting-info">
+                                                <span class="widget-49-pro-title">PRO-08235 DeskOpe. Website</span>
+                                                <span class="widget-49-meeting-time">12:00 to 13.30 Hrs</span>
+                                            </div>
+                                        </div>
+
+                                        <ol class="widget-49-meeting-points">
+                                            <li class="widget-49-meeting-item"><span>Expand module is removed</span>
+                                            </li>
+                                            <li class="widget-49-meeting-item"><span>Data migration is in scope</span>
+                                            </li>
+                                            <li class="widget-49-meeting-item"><span>Session timeout increase to 30 minutes</span>
+                                            </li>
+                                        </ol>
+
+                                        <div class="widget-49-meeting-action">
+                                            <a onclick="changeModule({{ module.ui_port }})" class="btn btn-sm btn-flash-border-primary">View</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        function changeModule(port) {
+            let host = window.location.host.split(':');
+            let newHost = `http://${host[0]}:${port}`
+            location.replace(newHost);
+        }
+
+
+        var socket = new WebSocket('ws://' + window.location.host + '/users/');
+
+        socket.onopen = function open() {
+            console.log('WebSockets connection created.');
+        };
+
+        console.log('hey!')
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.onopen();
+        }
+    </script>
+{% endblock extra_scripts %}

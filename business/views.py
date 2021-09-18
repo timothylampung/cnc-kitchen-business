@@ -4,16 +4,12 @@
 #  Email : timothylampung@gmail.com
 #  Contacts : +601165315133
 
-import threading
-import time
-
 from django.contrib.auth.models import User, Group
+from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from rq.decorators import job
 
+from app.models import Module
 from business.serializers import UserSerializer, GroupSerializer
 
 
@@ -34,3 +30,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+
+def index(request):
+    modules = Module.objects.filter(type=Module.STIR_FRY_MODULE)
+    return render(request, 'modules_selection.html', context={'data': 'name', 'modules': modules})

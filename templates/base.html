@@ -1,0 +1,82 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <title>{% block head_title %}{% endblock %}</title>
+    {% block extra_head %}
+    {% endblock %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Reenie+Beanie&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap');
+
+
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            user-select: none;
+        }
+
+        @media (min-width: 768px) {
+            .bd-placeholder-img-lg {
+                font-size: 3.5rem;
+            }
+        }
+
+    </style>
+
+
+</head>
+
+<body>
+<header>
+    <div style="background-color: #e99a38" class="navbar navbar-dark  shadow-sm">
+        <div class="container">
+            <a href="#" class="navbar-brand d-flex align-items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor"
+                     stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true"
+                     class="me-2" viewBox="0 0 24 24">
+                </svg>
+                <strong>Cooking Panel</strong>
+            </a>
+
+            <button class="navbar-toggler collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <a class="fa fa-pencil"></a>
+            </button>
+        </div>
+    </div>
+</header>
+
+{% block content %}
+{% endblock content %}
+{% block extra_body %}
+{% endblock %}
+<script src="{% static 'js/jquery-3.2.1.slim.min.js' %}"></script>
+<script src="{% static 'js/popper.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/e74bc1e970.js' %}"></script>
+{% block extra_scripts %}
+{% endblock extra_scripts %}
+
+<footer class="text-muted py-5">
+    <div class="container">
+        <p class="float-end mb-1">
+            <a href="#">CNC Kitchen</a>
+        </p>
+        <p class="mb-1">Chef panel © Cnc kitchen</p>
+        <p class="mb-0">New to CNC kitchen? <a href="/">
+            Visit the homepage
+        </a> or read our
+            <a href="">getting started guide</a>.</p>
+    </div>
+</footer>
+</body>
+</html>

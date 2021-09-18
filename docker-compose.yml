@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  module_one:
+    build:
+      context: .
+      dockerfile: Dockerfile.module_one
+    container_name: module_one
+    command: gunicorn business.wsgi:application --bind 0.0.0.0:8000 --workers 1
+    ports:
+      - "8000:8000"
+    expose:
+      - "8000"
+
+  module_two:
+    build:
+      context: .
+      dockerfile: Dockerfile.moduleTwo
+    container_name: module_two
+    command: gunicorn business.wsgi:application --bind 0.0.0.0:8001 --workers 1
+    ports:
+      - "8001:8001"
+    expose:
+      - "8001"

@@ -5,11 +5,9 @@
 #  Contacts : +601165315133
 
 import time
-
-from app.models import IngredientItem
+from stir_fry.core.wrapper.states import ModuleState
 from stir_fry.core.wrapper.stir_fry_wrapper import StirFryWrapper
 from timeit import default_timer as timer
-from transporter.core.wrapper.transporter_wrappers import TransporterSingleton
 
 
 class StirFrySDK:
@@ -17,8 +15,33 @@ class StirFrySDK:
     def __init__(self, ip, module_name):
         self.ip = ip
         self.module_name = module_name
-        self.wrapper = StirFryWrapper(self.ip, module_name)
-        self.transporter: TransporterSingleton = TransporterSingleton.get_instance()
+        self.state = ModuleState(module_name, by_pass_arm=False)
+        self.wrapper = StirFryWrapper(self.ip, module_name, self.state)
+        self.target_temperature = 32.0
+
+    def change_temperature(self, target_temperature):
+        """
+        :param target_temperature:
+        :return:
+        """
+        self.target_temperature = target_temperature
+
+    def functionality_test(self, count):
+        self.wrapper.rotate_horizontal()
+        for i in range(count):
+            self.wrapper.set_vertical_0()
+            self.wrapper.set_vertical_45()
+            time.sleep(3)
+            self.wrapper.set_vertical_0()
+
+        self.wrapper.set_vertical_plating()
+        time.sleep(4)
+        self.wrapper.set_vertical_0()
+        self.wrapper.set_vertical_washing()
+        time.sleep(3)
+        self.wrapper.set_vertical_0()
+        self.wrapper.set_vertical_45()
+        self.wrapper.set_vertical_0()
 
     def cook(self, target_temperature, duration, need_flip):
         """
@@ -29,25 +52,37 @@ class StirFrySDK:
         :param need_flip: vertical action to flip the foods
         :return: void
         """
+        self.target_temperature = target_temperature
         self.wrapper.rotate_horizontal()
         start = timer()
         time_lapse = 0
+        self.wrapper.set_vertical_0()
+        self.wrapper.set_vertical_picking()
+
+        self.wrapper.start_cooling_fan()
+        self.wrapper.start_board_fan()
 
         while time_lapse <= duration:
-            if self.wrapper.get_temperature() > target_temperature:
-                if need_flip:
-                    self.wrapper.set_vertical_0()
-                    self.wrapper.set_vertical_45()
+            if self.wrapper.is_far:
                 self.wrapper.off_induction()
-                start_wait = timer()
-                wait_lapse = 0
-                while wait_lapse < 5:
-                    wait_lapse = float("%.2f" % (timer() - start_wait))
             else:
-                self.wrapper.on_induction()
+                if self.wrapper.get_temperature() > self.target_temperature:
+                    self.wrapper.off_induction()
+                    if need_flip:
+                        self.wrapper.set_vertical_0()
+                        self.wrapper.set_vertical_45()
+                        start_wait = timer()
+                        wait_lapse = 0
+                        while wait_lapse < 5:
+                            wait_lapse = float("%.2f" % (timer() - start_wait))
+                        self.wrapper.set_vertical_0()
+                        self.wrapper.set_vertical_picking()
+                elif self.wrapper.get_temperature() < self.target_temperature:
+                    self.wrapper.on_induction()
             time_lapse = float("%.2f" % (timer() - start))
             time.sleep(1)
 
+        self.wrapper.set_vertical_0()
         self.wrapper.off_induction()
 
     def set_to_temperature(self, target_temperature):
@@ -55,14 +90,15 @@ class StirFrySDK:
         :param target_temperature: Target temperature to reach before the induction stops
         :return: void
         """
+        self.target_temperature = target_temperature
         self.wrapper.rotate_horizontal()
         temp = self.wrapper.get_temperature()
         start = timer()
-        while temp < target_temperature - 10 or temp > target_temperature + 10:
+        while temp < self.target_temperature - 10 or temp > self.target_temperature + 10:
             time_lapse = float("%.2f" % (timer() - start))
-            if temp < target_temperature - 10:
+            if (temp < self.target_temperature - 10) and not self.wrapper.is_far:
                 self.wrapper.on_induction()
-            elif temp > target_temperature + 10:
+            elif (temp > self.target_temperature + 10) and not self.wrapper.is_far:
                 self.wrapper.off_induction()
             temp = self.wrapper.get_temperature()
             if time_lapse > 45:
@@ -95,21 +131,17 @@ class StirFrySDK:
         :param volume: Volume of water to be pump into the wok
         :return: void
         """
-        self.wrapper.open_water_valve()
+        self.wrapper.start_board_fan()
         start = timer()
         time_lapse = 0
         while time_lapse < volume / 3:
             time_lapse = float("%.2f" % (timer() - start))
-        self.wrapper.close_water_valve()
+        self.wrapper.stop_board_fan()
         self.wrapper.set_vertical_45()
         start = timer()
         time_lapse = 0
         while time_lapse < 3:
             time_lapse = float("%.2f" % (timer() - start))
-
-    def pick_ingredients(self, item: IngredientItem, requester):
-        self.transporter.handle_item(item, f'{item.ingredient_id.type}_{requester}')
-        # handle_item(item, f'{item.ingredient_id.type}_{requester}')
 
     def portion_food_proximity(self):
         """
@@ -132,11 +164,13 @@ class StirFrySDK:
         """
         :return: void
         """
+        print('portion food')
+        self.wrapper.set_vertical_0()
         self.wrapper.rotate_horizontal()
         time.sleep(5)
-        self.wrapper.shake_horizontal()
         self.wrapper.set_vertical_plating()
         time.sleep(10)
+        self.wrapper.set_vertical_0()
         self.wrapper.stop_horizontal()
 
     def mix_food(self, duration):
@@ -144,6 +178,12 @@ class StirFrySDK:
         self.wrapper.set_vertical_45()
         time.sleep(duration)
         self.wrapper.stop_horizontal()
+
+    def on_light(self):
+        self.wrapper.on_light()
+
+    def off_light(self):
+        self.wrapper.off_light()
 
     def read_thermal_data(self):
         return self.wrapper.get_thermal_data()[0]

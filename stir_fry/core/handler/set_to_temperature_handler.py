@@ -6,14 +6,12 @@ from stir_fry.core.wrapper.stir_fry_sdk import StirFrySDK
 
 class SetToTemperatureHandler(AbstractHandler):
 
-    def __init__(self, sdk: StirFrySDK, state: ModuleState):
+    def __init__(self, sdk: StirFrySDK):
         self._sdk = sdk
         self._wrapper = self._sdk.wrapper
-        self._state = state
 
     def handle(self, instruction: Instruction, task: Task) -> str:
         if instruction.name == Instruction.SET_TO_TEMPERATURE:
-            print(f'------- SET TO TEMPERATURE ------ {instruction.name}')
             self._sdk.set_to_temperature(instruction.target_temperature)
             return "SET TO TEMPERATURE"
         else:

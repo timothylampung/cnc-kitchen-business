@@ -17,11 +17,13 @@ router.register(r'groups', views.GroupViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
+    url('', views.index),
+    path('users/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # url('stop/', dequeue),
     url('api-app/', include('app.api.api')),
     url('api-camera/', include('computer_vision.api.api')),
+    url('ui/', include('ui.urls')),
+
 ]
 
 urlpatterns += [

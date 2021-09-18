@@ -20,12 +20,8 @@ class StirFryTaskRunner(threading.Thread):
         while True:
             try:
                 task = self.queue.get_nowait()
-                if isinstance(task, str):
-                    if task == _sentinel_stop_worker:
-                        break
-                elif isinstance(task, Task):
+                if isinstance(task, Task):
                     recipe_handler = RecipeHandler(task)
                     recipe_handler.handle()
-                    print(task.__str__())
             except Exception as e:
                 pass

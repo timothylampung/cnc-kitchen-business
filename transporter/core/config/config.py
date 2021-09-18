@@ -31,22 +31,15 @@ class TTConf(object):
             'code': 14,
             'name': 'MOVE_GRANULAR_PLUNGER'
         }
-        TOGGLE_GRANULAR_VACUUM = {
+        GRANULAR_ESC = {
             'code': 15,
-            'name': 'TOGGLE_GRANULAR_VACUUM'
+            'name': 'GRANULAR_ESC'
         }
-        TOGGLE_GRANULAR_BLOWER = {
+        SOLID_ESC = {
             'code': 16,
-            'name': 'TOGGLE_GRANULAR_BLOWER'
+            'name': 'SOLID_ESC'
         }
-        TOGGLE_SOLID_VACUUM = {
-            'code': 17,
-            'name': 'TOGGLE_SOLID_VACUUM'
-        }
-        TOGGLE_SOLID_BLOWER = {
-            'code': 18,
-            'name': 'TOGGLE_SOLID_BLOWER'
-        }
+
         MOVE_TO_COORDINATE = {
             'code': 30,
             'name': 'MOVE_TO_COORDINATE'
@@ -57,3 +50,5 @@ class TTConf(object):
         }
 
         ArduinoRequestTimeOut = 180
+        # ROTATE_ESC_GRANULAR = 15,
+        # ROTATE_ESC_SOLID = 16,

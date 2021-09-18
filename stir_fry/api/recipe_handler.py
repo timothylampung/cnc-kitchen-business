@@ -1,11 +1,14 @@
+import os
+import subprocess
 import time
 from math import floor
 import threading
 import queue
 from timeit import default_timer as timer
 
-from app.models import Task, Module, Instruction
+from app.models import Task, Module, Instruction, Recipe, Setting
 from business import settings
+from business.settings import BASE_DIR
 from stir_fry.api.ingredient_parser import ingredient_parser
 from stir_fry.core.handler.cook_handler import CookHandler
 from stir_fry.core.handler.mix_food_handler import MixFoodHandler
@@ -13,6 +16,8 @@ from stir_fry.core.handler.pick_ingredient_handler import PickIngredientHandler
 from stir_fry.core.handler.portion_food_handler import PortionFoodHandler
 from stir_fry.core.handler.set_to_temperature_handler import SetToTemperatureHandler
 from stir_fry.core.wrapper.states import ModuleState
+from stir_fry.core.wrapper.stir_fry_sdk import StirFrySDK
+from transporter.core.wrapper.transporter_wrappers import TransporterSingleton
 
 BY_PASS_ARM = getattr(settings, "BY_PASS_ARM", False)
 _timer_sentinel = object()
@@ -43,19 +48,38 @@ def _timer(module_name: str, time_stopper: queue.Queue, etc, state):
             pass
 
 
+def stream_for_training(url, module: Module, path, recipe: Recipe):
+    from computer_vision.predictor_camera import PredictorCamera
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication([])
+    from computer_vision.trainer_camera import TrainerCamera
+    camera = TrainerCamera(module, path, recipe)
+    camera.show()
+    app.exec_()
+
+
+def stream_for_predicting(url, module: Module, path, recipe: Recipe):
+    from computer_vision.predictor_camera import PredictorCamera
+    from PyQt5.QtWidgets import QApplication
+    app = QApplication([])
+    camera = PredictorCamera(module, path, recipe)
+    camera.show()
+    app.exec_()
+
+
 class RecipeHandler:
     def __init__(self, task: Task):
         self.task = task
         self.module = task.module_id
         from business.machine_settings import MODULES
-        self._sdk = MODULES[self.module.type][self.module.name]['sdk']
-        self._state: ModuleState = MODULES[self.module.type][self.module.name]['state']
+        self._sdk: StirFrySDK = MODULES[self.module.type][self.module.name]['sdk']
+        self._transporter: TransporterSingleton = TransporterSingleton.get_instance()
+        self._state: ModuleState = self._sdk.state
         self._wrapper = self._sdk.wrapper
 
     def handle(self):
         while self.module.status == Module.BUSY:
             pass
-        print(f'Running task {self.module.name}')
         self.module.status = Module.BUSY
         self.module.save()
         instructions = Instruction.objects.filter(recipe_id=self.task.recipe_id)
@@ -74,22 +98,20 @@ class RecipeHandler:
                 self._state.induction_status = ModuleState.IDLE
                 self._state.temperature = self._sdk.wrapper.get_temperature()
         self._state.current_process = 'START'
-        print('arm is not bypassed')
         time_stopper = queue.Queue()
         t = threading.Thread(target=_timer, args=(self.module.name, time_stopper, recipe.etc, self._state),
                              name=f'Timer for {self.module.name}')
         t.start()
-        cook = CookHandler(self._sdk, self._state)
-        set_to_temperature = SetToTemperatureHandler(self._sdk, self._state)
-        pick_ingredient = PickIngredientHandler(self._sdk, self._state)
-        portion_food = PortionFoodHandler(self._sdk, self._state)
-        mix_food = MixFoodHandler(self._sdk, self._state)
+        cook = CookHandler(self._sdk)
+        set_to_temperature = SetToTemperatureHandler(self._sdk)
+        pick_ingredient = PickIngredientHandler(self._transporter, self._sdk.module_name)
+        portion_food = PortionFoodHandler(self._sdk)
+        mix_food = MixFoodHandler(self._sdk)
 
         cook.set_next(pick_ingredient) \
             .set_next(set_to_temperature) \
             .set_next(portion_food) \
             .set_next(mix_food)
-        print('handlers ready')
 
         from stir_fry.core.handler.handler import Handler
 

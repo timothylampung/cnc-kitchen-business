@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="{% static 'css/card.css' %}">
+{% endblock %}
+
+{% block content %}
+    <main>
+
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="row row-cols-1 row-cols-md-5">
+                    {% for recipe in recipes %}
+                        <div class="col">
+                            <div class="card-sl">
+                                <div class="card-image">
+                                    <img class="bd-placeholder-img card-img-top"
+                                         style="object-fit: cover"
+                                         width="225" height="150"
+                                         alt="recipe image"
+                                         src="http://127.0.0.1:8000/media/{{ recipe.image_path }}"/>
+                                </div>
+                                <a class="card-action" href="#"><i class="fa fa-heart"></i></a>
+                                <div class="card-heading">
+                                    {{ recipe.recipe_name|title }}
+                                </div>
+                                <div class="card-text">
+                                    {{ recipe.description | truncatechars:100 }}
+                                </div>
+                                <a href="#" class="card-button">Queue</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}
+
+{% block extra_scripts %}
+    <script>
+        var socket = new WebSocket('ws://' + window.location.host + '/users/');
+
+        socket.onopen = function open() {
+            console.log('WebSockets connection created.');
+        };
+
+        console.log('hey!')
+        if (socket.readyState === WebSocket.OPEN) {
+            socket.onopen();
+        }
+    </script>
+{% endblock extra_scripts %}

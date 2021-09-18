@@ -13,7 +13,6 @@ def handle_item(item: IngredientItem, requester):
     claim_id = transporter.claim_transporter()
     coordinate = item.ingredient_id.coordinate_id
     ingredient = item.ingredient_id
-    print(f'MOVING TO {ingredient.coordinate_y}, {ingredient.coordinate_y}')
     transporter.move_to_coordinate(ingredient.coordinate_x, ingredient.coordinate_y, claim_id)
     dispense: Coordinates = Coordinates.objects.get(name=requester)
     transporter.move_to_coordinate(dispense.linear, dispense.center, claim_id)
